@@ -1,0 +1,14 @@
+node_modules/
+release/
+release-full/
+release-lite/
+dist/
+uploads/
+outputs/
+build/*
+!build/icon.ico
+!build/installer.nsh
+.env
+*.log
+build-output.txt
+build-log.txt

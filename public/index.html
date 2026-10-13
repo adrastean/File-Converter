@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Converter</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .app-footer {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.app-footer a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, #312e81 0%, transparent 35%),
+        radial-gradient(circle at 85% 80%, #1d4ed8 0%, transparent 35%),
+        linear-gradient(135deg, #050509, #111827 50%, #1e1b4b);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .container {
+      width: min(450px, calc(100% - 32px));
+      padding: 34px;
+      text-align: center;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow:
+        0 0 35px rgba(59, 130, 246, 0.25),
+        0 0 80px rgba(124, 58, 237, 0.2);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      color: #ffffff;
+    }
+
+    .description {
+      margin-bottom: 26px;
+      color: #cbd5e1;
+    }
+
+    .file-area {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .file-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    select {
+      width: 100%;
+      margin: 12px 0 18px;
+      padding: 12px;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      background: #1e293b;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    select:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #64748b;
+      cursor: wait;
+      transform: none;
+    }
+
+    .progress-area {
+      margin-top: 18px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #334155;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2563eb, #7c3aed, #c026d3);
+      transition: width 0.25s ease;
+    }
+
+    .progress-text {
+      display: block;
+      margin-top: 8px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    #status {
+      min-height: 24px;
+      margin: 22px 0 0;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .error {
+      color: #f87171;
+    }
+
+    .success {
+      color: #4ade80;
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        padding: 26px 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Converter</h1>
+
+    <p class="description">
+      Dosyanı seç ve hedef formatı belirle.
+    </p>
+
+    <form id="converterForm">
+      <div class="file-area">
+        <label class="file-label" for="fileInput">
+          Dönüştürülecek dosya
+        </label>
+
+        <input
+          id="fileInput"
+          type="file"
+          accept=".mp4,.mp3,.wav,.m4a,.flac,.ogg,.aac,.jpg,.jpeg,.png,.webp,.docx,.pptx,.xlsx,.odt,.odp,.ods,.txt,.csv,.rtf,.html,.htm,.pdf"
+          required
+        />
+      </div>
+
+      <select id="targetFormat" required disabled>
+        <option value="" selected disabled>
+          Önce dönüştürülecek dosyayı seçin
+        </option>
+      </select>
+
+      <button id="convertButton" type="submit">
+        Dönüştür
+      </button>
+
+      <div id="progressArea" class="progress-area" hidden>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <span id="progressText" class="progress-text">0%</span>
+      </div>
+    </form>
+
+    <p id="status"></p>
+  </main>
+
+<footer class="app-footer">
+  <a
+    href="https://github.com/adrastean"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    GitHub
+  </a>
+
+  <span>by Adrastea</span>
+</footer>
+
+  <script>
+    const form = document.getElementById("converterForm");
+    const fileInput = document.getElementById("fileInput");
+    const targetFormat = document.getElementById("targetFormat");
+    const convertButton = document.getElementById("convertButton");
+    const status = document.getElementById("status");
+    const progressArea = document.getElementById("progressArea");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+
+    let progressTimer = null;
+    let progressValue = 0;
+    const successSound = new Audio("/success.wav");
+
+function playSuccessSound() {
+  successSound.currentTime = 0;
+  successSound.play();
+
+  setTimeout(() => {
+    successSound.pause();
+    successSound.currentTime = 0;
+  }, 2000);
+}
+
+    const mediaExtensions = [
+      "mp4",
+      "mp3",
+      "wav",
+      "m4a",
+      "flac",
+      "ogg",
+      "aac"
+    ];
+
+    const officeExtensions = [
+      "docx",
+      "pptx",
+      "xlsx",
+      "odt",
+      "odp",
+      "ods",
+      "txt",
+      "csv",
+      "rtf",
+      "html",
+      "htm"
+    ];
+
+    const imageOptions = {
+      jpg: `
+        <option value="png">PNG</option>
+        <option value="webp">WebP</option>
+        <option value="pdf">PDF</option>
+      `,
+
+      jpeg: `
+        <option value="png">PNG</option>
+        <option value="webp">WebP</option>
+        <option value="pdf">PDF</option>
+      `,
+
+      png: `
+        <option value="jpg">JPG</option>
+        <option value="webp">WebP</option>
+        <option value="pdf">PDF</option>
+      `,
+
+      webp: `
+        <option value="jpg">JPG</option>
+        <option value="png">PNG</option>
+        <option value="pdf">PDF</option>
+      `
+    };
+
+    function resetTargetFormat() {
+      targetFormat.innerHTML = `
+        <option value="" selected disabled>
+          Önce dönüştürülecek dosyayı seçin
+        </option>
+      `;
+
+      targetFormat.disabled = true;
+    }
+
+    function setStatus(message, className = "") {
+      status.textContent = message;
+      status.className = className;
+    }
+
+    function startProgress() {
+      clearInterval(progressTimer);
+
+      progressValue = 0;
+      progressArea.hidden = false;
+      progressBar.style.width = "0%";
+      progressText.textContent = "0%";
+
+      progressTimer = setInterval(() => {
+        if (progressValue >= 95) return;
+
+        progressValue = Math.min(
+          95,
+          progressValue + Math.floor(Math.random() * 4) + 1
+        );
+
+        progressBar.style.width = `${progressValue}%`;
+        progressText.textContent = `${progressValue}%`;
+      }, 350);
+    }
+
+    function finishProgress(success) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+
+      if (!success) {
+        progressArea.hidden = true;
+        return;
+      }
+
+      progressValue = 100;
+      progressBar.style.width = "100%";
+      progressText.textContent = "100%";
+
+      setTimeout(() => {
+        progressArea.hidden = true;
+      }, 1200);
+    }
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+
+      if (!file) {
+        resetTargetFormat();
+        setStatus("");
+        return;
+      }
+
+      const extension = file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+      if (mediaExtensions.includes(extension)) {
+        targetFormat.innerHTML = `
+          <option value="mp3">MP3</option>
+          <option value="wav">WAV</option>
+          <option value="m4a">M4A</option>
+          <option value="flac">FLAC</option>
+          <option value="ogg">OGG</option>
+        `;
+
+        targetFormat.disabled = false;
+      } else if (imageOptions[extension]) {
+        targetFormat.innerHTML = imageOptions[extension];
+        targetFormat.disabled = false;
+      } else if (extension === "pdf") {
+        targetFormat.innerHTML = `
+          <option value="txt">TXT</option>
+          <option value="docx">DOCX</option>
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+        `;
+
+        targetFormat.disabled = false;
+      } else if (officeExtensions.includes(extension)) {
+        targetFormat.innerHTML = `
+          <option value="pdf">PDF</option>
+        `;
+
+        targetFormat.disabled = false;
+      } else {
+        targetFormat.innerHTML = `
+          <option value="" selected disabled>
+            Bu dosya türü desteklenmiyor
+          </option>
+        `;
+
+        targetFormat.disabled = true;
+      }
+
+      setStatus(`${file.name} seçildi.`);
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const file = fileInput.files[0];
+
+      if (!file) {
+        setStatus("Lütfen bir dosya seç.", "error");
+        return;
+      }
+
+      if (!targetFormat.value) {
+        setStatus("Lütfen hedef formatı seç.", "error");
+        return;
+      }
+
+      convertButton.disabled = true;
+      targetFormat.disabled = true;
+      startProgress();
+      setStatus("Dönüştürülüyor...");
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("targetFormat", targetFormat.value);
+
+      try {
+        const response = await fetch("/convert", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const blob = await response.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+        const downloadLink = document.createElement("a");
+
+        const downloadName =
+          blob.type.includes("zip")
+            ? "converted-pages.zip"
+            : `converted.${targetFormat.value}`;
+
+        downloadLink.href = downloadUrl;
+        downloadLink.download = downloadName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+
+        URL.revokeObjectURL(downloadUrl);
+
+        playSuccessSound();
+
+        finishProgress(true);
+
+setStatus(
+  "Dönüştürme tamamlandı. Dosya indirildi.",
+  "success"
+);
+      } catch (error) {
+        finishProgress(false);
+
+        setStatus(
+          error.message || "Bir hata oluştu.",
+          "error"
+        );
+      } finally {
+        convertButton.disabled = false;
+        targetFormat.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

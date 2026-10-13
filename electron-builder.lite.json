@@ -1,0 +1,50 @@
+{
+  "appId": "com.adrastea.converter",
+  "productName": "Converter Lite",
+  "directories": {
+    "output": "release-lite",
+    "buildResources": "build"
+  },
+  "files": [
+    "**/*",
+    "!dist/**",
+    "!release/**",
+    "!release-full/**",
+    "!release-lite/**",
+    "!uploads/**",
+    "!outputs/**",
+    "!*.log",
+    "!**/*.map",
+    "!**/test{,/**/*}",
+    "!**/tests{,/**/*}",
+    "!**/docs{,/**/*}",
+    "!pdf_to_docx.py"
+  ],
+  "extraResources": [
+    {
+      "from": "build/pdf_to_docx.exe",
+      "to": "pdf_to_docx.exe"
+    }
+  ],
+  "asarUnpack": [
+    "node_modules/ffmpeg-static/**",
+    "node_modules/sharp/**"
+  ],
+  "compression": "maximum",
+  "electronLanguages": [
+    "en-US",
+    "tr"
+  ],
+  "win": {
+    "target": [
+      "nsis"
+    ],
+    "icon": "build/icon.ico",
+    "artifactName": "Converter-Lite-Setup-${version}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true
+  }
+}
