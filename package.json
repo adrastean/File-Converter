@@ -1,6 +1,6 @@
 {
   "name": "converter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A desktop file conversion tool built with Electron and Node.js.",
   "main": "electron.js",
   "scripts": {
@@ -26,8 +26,7 @@
   },
   "devDependencies": {
     "electron": "^44.7.0",
-    "electron-builder": "^26.15.3",
-    "nodemon": "^3.1.14"
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.adrastea.converter",

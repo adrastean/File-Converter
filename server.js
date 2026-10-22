@@ -976,11 +976,15 @@ const python = spawn(helperPath, [
 });
 
 function startServer() {
-  return app.listen(PORT, () => {
-    console.log(
-      `Converter çalışıyor: http://localhost:${PORT}`
-    );
-  });
+  return app.listen(
+    PORT,
+    "127.0.0.1",
+    () => {
+      console.log(
+        `Converter çalışıyor: http://127.0.0.1:${PORT}`
+      );
+    }
+  );
 }
 
 if (require.main === module) {
